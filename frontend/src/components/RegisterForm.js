@@ -20,7 +20,7 @@ function RegisterForm () {
         const data = await response.json();
 
         if(response.ok) {
-            alert('Регистрация успешна! ойдите в систему.');
+            alert('Регистрация успешна! Войдите в систему.');
             navigate('/');
         }else {
             alert(data.error);

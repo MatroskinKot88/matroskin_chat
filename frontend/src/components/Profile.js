@@ -1,13 +1,21 @@
 import React, {useState, useEffect} from "react";
-import { TextField, Button, Container, Paper, Typography } from "@mui/material";
+import { TextField, Button, Container, Paper, Typography, Alert } from "@mui/material";
 
 function Profile () {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
 
     useEffect(() => {
         // Получаем данные профиля
         const token = localStorage.getItem('token');
+        if(!token) {
+            alert('Сначала войдите в систему');
+            window.location.href = '/';
+            return;
+        }
+
         fetch('http://localhost:5000/profile', {
             headers: {Authorization: `Bearer ${token}` },
         })
@@ -15,6 +23,9 @@ function Profile () {
         .then(data => {
             setName(data.name);
             setEmail(data.email);
+        })
+        .catch(() => {
+            alert('Ошибка получения профиля');
         });
     }, []);
 
@@ -33,9 +44,11 @@ function Profile () {
 
     const data = await response.json();
     if(response.ok) {
-        alert('Профиль обновлен!');
+        setMessage('Профиль обновлен!');
+        setError('');
     } else {
-        alert(data.error);
+        setError(data.error);
+        setMessage('');
     }
 };
 
@@ -62,6 +75,9 @@ function Profile () {
                         Сохранить
                     </Button>
                 </form>
+
+                {message && <Alert severity="success" style={{ marginTop: '20px'}}>{message}</Alert>}
+                {error && <Alert severity="error" style={{marginTop: '20px'}}>{error}</Alert>}
             </Paper>
         </Container>
     );
